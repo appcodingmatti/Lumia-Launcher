@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Lumia</string>
+    <string name="settings">Einstellungen</string>
+    <string name="wifi">WLAN</string>
+    <string name="favorites">Favoriten</string>
+    <string name="all_apps">Alle Apps</string>
+    <string name="app_not_installed">App ist nicht installiert</string>
+    <string name="add_to_favorites_hint">Füge Apps zu deinen Favoriten hinzu</string>
+    <string name="favorites_long_click_hint">OK gedrückt halten für Optionen</string>
+    <string name="added_to_favorites">%1$s zu Favoriten hinzugefügt</string>
+    <string name="removed_from_favorites">%1$s aus Favoriten entfernt</string>
+    <string name="add_to_favorites">Zu Favoriten hinzufügen</string>
+    <string name="remove_from_favorites">Aus Favoriten entfernen</string>
+    <string name="move_left">Nach links verschieben</string>
+    <string name="move_right">Nach rechts verschieben</string>
+    <string name="open_app">App öffnen</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="app_options">Optionen</string>
+</resources>

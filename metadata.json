@@ -1,0 +1,6 @@
+{
+  "name": "Lumia",
+  "description": "Native Android TV Launcher built with Jetpack Compose for TV featuring a transparent system wallpaper window, live digital clock, system settings shortcuts, and frosted glass favorites shelf.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

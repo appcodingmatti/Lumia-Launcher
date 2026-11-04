@@ -189,11 +189,10 @@ class LauncherViewModel(application: Application) : AndroidViewModel(application
           )
         }
 
-      // If on test emulator with very few installed apps, supplement with realistic TV apps
-      val mergedCatalog = if (realInstalledApps.size < 18) {
-        val existingPkgs = realInstalledApps.map { it.packageName }.toSet()
-        val supplements = getSampleTvCatalog().filter { it.packageName !in existingPkgs }
-        realInstalledApps + supplements
+      // On real TV devices, display all discovered installed apps.
+      // Fallback to sample catalog only if 0 apps are discovered (e.g. in test containers or restricted emulators).
+      val mergedCatalog = if (realInstalledApps.isEmpty()) {
+        getSampleTvCatalog()
       } else {
         realInstalledApps
       }

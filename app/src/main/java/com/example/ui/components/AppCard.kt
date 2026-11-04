@@ -78,7 +78,7 @@ fun AppCard(
   app: AppItem,
   onLaunch: () -> Unit,
   modifier: Modifier = Modifier,
-  cardWidth: Dp = 172.dp,
+  cardWidth: Dp? = 172.dp,
   cardHeight: Dp = 94.dp,
   onLongClick: (() -> Unit)? = null,
   onFocusChangedCallback: ((Boolean) -> Unit)? = null
@@ -108,10 +108,14 @@ fun AppCard(
 
   val shadowElevation = if (isFocused) 20.dp else 2.dp
 
+  val baseModifier = if (cardWidth != null) {
+    modifier.width(cardWidth).height(cardHeight)
+  } else {
+    modifier.height(cardHeight)
+  }
+
   Box(
-    modifier = modifier
-      .width(cardWidth)
-      .height(cardHeight)
+    modifier = baseModifier
       .zIndex(if (isFocused) 2f else 0f)
       .scale(scale)
       .shadow(
@@ -127,13 +131,16 @@ fun AppCard(
         if (!focusState.isFocused) {
           holdJob?.cancel()
           isDpadCenterHeld = false
-          isLongPressHandled = false
+          // Note: Keep isLongPressHandled until KeyUp event completes
+          // to avoid accidental launches when the modal steals focus during button release
         }
         onFocusChangedCallback?.invoke(focusState.isFocused)
       }
       .focusable(interactionSource = interactionSource)
       .onKeyEvent { keyEvent ->
-        val isCenterKey = keyEvent.key == Key.DirectionCenter || keyEvent.key == Key.Enter
+        val isCenterKey = keyEvent.key == Key.DirectionCenter ||
+          keyEvent.key == Key.Enter ||
+          keyEvent.key == Key.NumPadEnter
         if (isCenterKey) {
           if (keyEvent.type == KeyEventType.KeyDown) {
             if (!isDpadCenterHeld) {
@@ -141,7 +148,7 @@ fun AppCard(
               isLongPressHandled = false
               holdJob?.cancel()
               holdJob = coroutineScope.launch {
-                delay(500L) // Long press threshold
+                delay(450L) // Long press threshold
                 if (isDpadCenterHeld) {
                   isLongPressHandled = true
                   onLongClick?.invoke()

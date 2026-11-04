@@ -46,6 +46,7 @@ fun AllAppsGrid(
             app = app,
             onLaunch = { onLaunchApp(app) },
             onLongClick = { onOpenOptions?.invoke(app) },
+            cardWidth = null,
             modifier = Modifier.weight(1f)
           )
         }

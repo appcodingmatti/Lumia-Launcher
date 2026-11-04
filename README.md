@@ -62,8 +62,11 @@ Wird auf einer App-Kachel die OK-Taste lang gedrückt gehalten, öffnet sich ein
 Die Installation auf dem **Philips 65OLED850 (Google TV)** erfolgt komfortabel ohne PC oder Entwickler-Tools über einen herkömmlichen USB-Stick:
 
 ### Schritt 1: APK vorbereiten
-1. Die kompilierte APK (`app-debug.apk` oder signierte Release-APK) generieren.
-2. Die Datei auf einen mit **FAT32** oder **exFAT** formatierten USB-Stick kopieren.
+1. Die fertig kompilierte APK liegt direkt im Hauptverzeichnis des Projekts bereit:
+   - **Direktlink im Projekt-Root:** `AuroraLauncher.apk` (26 MB)
+   - **Standard Gradle-Ausgabe:** `app/build/outputs/apk/debug/app-debug.apk`
+2. Die Datei herunterladen (Rechtsklick im Dateibaum > Herunterladen oder über das Menü oben rechts).
+3. Die Datei auf einen mit **FAT32** oder **exFAT** formatierten USB-Stick kopieren.
 
 ### Schritt 2: Fernseher vorbereiten (Entwickleroptionen)
 1. Am Fernseher auf das **Zahnrad-Symbol** (Einstellungen) gehen.

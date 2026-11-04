@@ -34,6 +34,8 @@ import com.example.R
 import com.example.model.AppItem
 import com.example.ui.components.AllAppsGrid
 import com.example.ui.components.AppOptionsDialog
+import com.example.ui.components.EditAppNameDialog
+import com.example.ui.components.EditAppStyleDialog
 import com.example.ui.components.FavoritesRow
 import com.example.ui.components.TopBar
 import com.example.viewmodel.LauncherViewModel
@@ -70,6 +72,8 @@ fun HomeScreen(
   val showScenicWallpaper by viewModel.showScenicWallpaper.collectAsState()
 
   var selectedAppForDialog by remember { mutableStateOf<AppItem?>(null) }
+  var appToRename by remember { mutableStateOf<AppItem?>(null) }
+  var appToStyle by remember { mutableStateOf<AppItem?>(null) }
   val firstFavoriteFocusRequester = remember { FocusRequester() }
 
   // Initial focus requested on the first favorite app card for immediate D-pad readiness
@@ -82,17 +86,20 @@ fun HomeScreen(
     }
   }
 
-  // Handle remote Back button: return to top favorites shelf
+  // Handle remote Back button: dismiss modals or return to top favorites shelf
   BackHandler {
-    if (selectedAppForDialog != null) {
-      selectedAppForDialog = null
-    } else {
-      coroutineScope.launch {
-        listState.animateScrollToItem(0)
-        try {
-          firstFavoriteFocusRequester.requestFocus()
-        } catch (_: Exception) {
-          // Ignored
+    when {
+      appToRename != null -> appToRename = null
+      appToStyle != null -> appToStyle = null
+      selectedAppForDialog != null -> selectedAppForDialog = null
+      else -> {
+        coroutineScope.launch {
+          listState.animateScrollToItem(0)
+          try {
+            firstFavoriteFocusRequester.requestFocus()
+          } catch (_: Exception) {
+            // Ignored
+          }
         }
       }
     }
@@ -195,8 +202,44 @@ fun HomeScreen(
         onMoveRight = {
           viewModel.moveFavoriteRight(freshApp)
         },
+        onRename = {
+          appToRename = freshApp
+        },
+        onChangeStyle = {
+          appToStyle = freshApp
+        },
+        onResetCustomization = {
+          viewModel.resetAppCustomization(context, freshApp)
+        },
         onLaunchApp = {
           viewModel.launchApp(context, freshApp)
+        }
+      )
+    }
+
+    // Modal Dialog: Rename App (Enter new name via TV keyboard)
+    appToRename?.let { targetApp ->
+      val freshApp = (allApps + favorites).firstOrNull { it.id == targetApp.id } ?: targetApp
+      EditAppNameDialog(
+        app = freshApp,
+        onDismiss = { appToRename = null },
+        onSave = { newName ->
+          viewModel.renameApp(context, freshApp, newName)
+        }
+      )
+    }
+
+    // Modal Dialog: Change App Brand Style and Background Color
+    appToStyle?.let { targetApp ->
+      val freshApp = (allApps + favorites).firstOrNull { it.id == targetApp.id } ?: targetApp
+      EditAppStyleDialog(
+        app = freshApp,
+        onDismiss = { appToStyle = null },
+        onSave = { brand, color ->
+          viewModel.changeAppStyle(context, freshApp, brand, color)
+        },
+        onReset = {
+          viewModel.resetAppCustomization(context, freshApp)
         }
       )
     }

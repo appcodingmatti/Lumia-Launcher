@@ -25,7 +25,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.Launch
+import androidx.compose.material.icons.rounded.Palette
+import androidx.compose.material.icons.rounded.RestartAlt
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material.icons.rounded.StarOutline
 import androidx.compose.material3.Icon
@@ -69,6 +72,9 @@ fun AppOptionsDialog(
   onToggleFavorite: () -> Unit,
   onMoveLeft: (() -> Unit)? = null,
   onMoveRight: (() -> Unit)? = null,
+  onRename: () -> Unit = {},
+  onChangeStyle: () -> Unit = {},
+  onResetCustomization: (() -> Unit)? = null,
   onLaunchApp: () -> Unit
 ) {
   val primaryFocusRequester = remember { FocusRequester() }
@@ -150,11 +156,11 @@ fun AppOptionsDialog(
               overflow = TextOverflow.Ellipsis
             )
             Text(
-              text = if (app.isFavorite) {
+              text = (if (app.isFavorite) {
                 if (favoriteIndex >= 0) "Favorit (${favoriteIndex + 1} von $totalFavoritesCount)" else "In Favoriten"
               } else {
                 "Nicht in Favoriten"
-              },
+              }) + (if (app.isCustomized) " • Angepasst" else ""),
               color = if (app.isFavorite) Color(0xFFFFD700) else Color.White.copy(alpha = 0.6f),
               fontSize = 13.sp,
               fontWeight = FontWeight.Medium
@@ -213,7 +219,51 @@ fun AppOptionsDialog(
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        // Action 4: Open App
+        // Action 4: Rename App
+        DialogActionButton(
+          label = stringResource(R.string.rename_app),
+          icon = Icons.Rounded.Edit,
+          isPrimary = false,
+          testTag = "dialog_rename_app_button",
+          onClick = {
+            onDismiss()
+            onRename()
+          }
+        )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        // Action 5: Change Brand Style & Color
+        DialogActionButton(
+          label = stringResource(R.string.change_style),
+          icon = Icons.Rounded.Palette,
+          isPrimary = false,
+          testTag = "dialog_change_style_button",
+          onClick = {
+            onDismiss()
+            onChangeStyle()
+          }
+        )
+
+        // Action 6: Reset Customization (if customized)
+        if (app.isCustomized && onResetCustomization != null) {
+          Spacer(modifier = Modifier.height(10.dp))
+          DialogActionButton(
+            label = stringResource(R.string.reset_customization),
+            icon = Icons.Rounded.RestartAlt,
+            iconTint = Color(0xFFFF8A80),
+            isPrimary = false,
+            testTag = "dialog_reset_customization_button",
+            onClick = {
+              onDismiss()
+              onResetCustomization()
+            }
+          )
+        }
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        // Action 7: Open App
         DialogActionButton(
           label = stringResource(R.string.open_app),
           icon = Icons.Rounded.Launch,

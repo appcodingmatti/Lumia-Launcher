@@ -16,4 +16,14 @@
     <string name="open_app">App öffnen</string>
     <string name="cancel">Abbrechen</string>
     <string name="app_options">Optionen</string>
+    <string name="rename_app">App umbenennen</string>
+    <string name="change_style">Icon &amp; Stil anpassen</string>
+    <string name="reset_customization">Auf Standard zurücksetzen</string>
+    <string name="save">Speichern</string>
+    <string name="enter_app_name">Neuen Namen eingeben</string>
+    <string name="select_brand_style">Marken-Design wählen</string>
+    <string name="select_color">Hintergrundfarbe wählen</string>
+    <string name="original_name">Standard: %1$s</string>
+    <string name="customization_saved">Anpassung gespeichert</string>
+    <string name="customization_reset">Auf Standard zurückgesetzt</string>
 </resources>

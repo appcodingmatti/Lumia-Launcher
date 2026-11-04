@@ -1,6 +1,6 @@
 {
-  "summary": "Implementierungsplan für Lumia TV Launcher:\n1. Favoriten umsortieren im App-Optionsdialog (Nach links / Nach rechts verschieben) mit persistenter Speicherung in SharedPreferences.\n2. Wetteranzeige und erweiterte Top-Bar-Infos (Datum mit Wochentag, Wetter-Icon und Temperatur, Netzwerkstatus).",
-  "updatedAt": "2026-11-04T01:07:40.621651688Z",
+  "summary": "Implementierungsplan für App-Customization in Lumia:\n1. App-Namen ändern (Umbenennen) direkt im Kontextmenü mit benutzerfreundlicher TV-Eingabe.\n2. App-Icons und Kachel-Stile anpassen (Auswahl aus TV-Marken-Presets, Farben und Symbolen).\n3. Dauerhafte Speicherung aller Anpassungen in SharedPreferences mit sofortiger UI-Aktualisierung in Favoriten und All-Apps.",
+  "updatedAt": "2026-11-04T01:18:03.897498835Z",
   "requestFeedback": true,
   "userFacing": true
 }

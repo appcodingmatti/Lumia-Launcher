@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.R
+import com.example.data.AppCustomizationPreferences
 import com.example.data.FavoritesPreferences
 import com.example.model.AppItem
 import com.example.model.BrandType
@@ -35,6 +36,7 @@ import java.util.Locale
 class LauncherViewModel(application: Application) : AndroidViewModel(application) {
 
   private val favoritesPrefs = FavoritesPreferences(application)
+  private val customizationPrefs = AppCustomizationPreferences(application)
 
   private val _currentTime = MutableStateFlow(getCurrentFormattedTime())
   val currentTime: StateFlow<String> = _currentTime.asStateFlow()
@@ -146,7 +148,6 @@ class LauncherViewModel(application: Application) : AndroidViewModel(application
   /**
    * Queries PackageManager for all installed apps that have a launch intent on TV,
    * strictly excluding Lumia itself.
-   * Then splits them into Favorites and All Apps based on SharedPreferences.
    */
   fun loadInstalledApps() {
     viewModelScope.launch {
@@ -179,6 +180,7 @@ class LauncherViewModel(application: Application) : AndroidViewModel(application
           AppItem(
             id = pkg,
             name = label,
+            originalName = label,
             packageName = pkg,
             brandType = brand,
             cardColor = color,
@@ -202,6 +204,22 @@ class LauncherViewModel(application: Application) : AndroidViewModel(application
   }
 
   /**
+   * Applies user customizations (custom name, brand style, color) onto an AppItem.
+   */
+  private fun applyCustomization(item: AppItem): AppItem {
+    val cust = customizationPrefs.getCustomization(item.packageName) ?: return item.copy(isCustomized = false)
+    val name = cust.customName ?: item.originalName
+    val brand = cust.customBrand ?: item.brandType
+    val color = cust.customColor ?: getCardColorForBrand(brand)
+    return item.copy(
+      name = name,
+      brandType = brand,
+      cardColor = color,
+      isCustomized = true
+    )
+  }
+
+  /**
    * Partitions discovered apps into:
    * 1. 'Favoriten' (ordered according to user's saved SharedPreferences)
    * 2. 'Alle Apps' (alphabetically sorted list of all apps)
@@ -210,14 +228,16 @@ class LauncherViewModel(application: Application) : AndroidViewModel(application
     val savedFavPkgs = favoritesPrefs.getFavoritePackages()
     val appsByPkg = rawDiscoveredApps.associateBy { it.packageName }
 
-    // Map saved packages in their saved order
+    // Map saved packages in their saved order with customizations applied
     val favList = savedFavPkgs.mapNotNull { pkg ->
-      appsByPkg[pkg]?.copy(isFavorite = true)
+      appsByPkg[pkg]?.let { app ->
+        applyCustomization(app.copy(isFavorite = true))
+      }
     }
 
-    // All apps sorted alphabetically
+    // All apps sorted alphabetically with customizations applied
     val allList = rawDiscoveredApps.map { app ->
-      app.copy(isFavorite = savedFavPkgs.contains(app.packageName))
+      applyCustomization(app.copy(isFavorite = savedFavPkgs.contains(app.packageName)))
     }.sortedBy { it.name.lowercase() }
 
     _favoriteApps.value = favList
@@ -244,6 +264,33 @@ class LauncherViewModel(application: Application) : AndroidViewModel(application
 
   fun getFavoriteIndex(app: AppItem): Int {
     return favoritesPrefs.getFavoriteIndex(app.packageName)
+  }
+
+  /**
+   * Renames an app and persists it.
+   */
+  fun renameApp(context: Context, app: AppItem, newName: String) {
+    customizationPrefs.saveCustomName(app.packageName, newName)
+    applyFavoritesPartitioning()
+    Toast.makeText(context, context.getString(R.string.customization_saved), Toast.LENGTH_SHORT).show()
+  }
+
+  /**
+   * Changes the brand preset or card color of an app and persists it.
+   */
+  fun changeAppStyle(context: Context, app: AppItem, brand: BrandType, color: Color) {
+    customizationPrefs.saveCustomStyle(app.packageName, brand, color)
+    applyFavoritesPartitioning()
+    Toast.makeText(context, context.getString(R.string.customization_saved), Toast.LENGTH_SHORT).show()
+  }
+
+  /**
+   * Resets an app to its default name and style.
+   */
+  fun resetAppCustomization(context: Context, app: AppItem) {
+    customizationPrefs.resetCustomization(app.packageName)
+    applyFavoritesPartitioning()
+    Toast.makeText(context, context.getString(R.string.customization_reset), Toast.LENGTH_SHORT).show()
   }
 
   /**
@@ -338,7 +385,7 @@ class LauncherViewModel(application: Application) : AndroidViewModel(application
     }
   }
 
-  private fun getCardColorForBrand(brand: BrandType): Color {
+  fun getCardColorForBrand(brand: BrandType): Color {
     return when (brand) {
       BrandType.PLEX -> Color(0xFF141414)
       BrandType.YOUTUBE -> Color(0xFFFFFFFF)

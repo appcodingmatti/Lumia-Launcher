@@ -29,5 +29,7 @@ data class AppItem(
   val brandType: BrandType = BrandType.GENERIC_APP,
   val cardColor: Color = Color(0xFF1E2228),
   val iconDrawable: Drawable? = null,
-  val isFavorite: Boolean = false
+  val isFavorite: Boolean = false,
+  val originalName: String = name,
+  val isCustomized: Boolean = false
 )

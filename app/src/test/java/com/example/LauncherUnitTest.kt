@@ -118,4 +118,45 @@ class LauncherUnitTest {
     assertTrue(conditions.contains("THUNDERSTORM"))
     assertTrue(conditions.contains("SNOWY"))
   }
+
+  @Test
+  fun testAppCustomization() {
+    val initialApp = AppItem(
+      id = "com.custom.app",
+      name = "Old Name",
+      originalName = "Old Name",
+      packageName = "com.custom.app",
+      brandType = BrandType.GENERIC_APP,
+      isCustomized = false
+    )
+
+    // Customize name
+    val renamedApp = initialApp.copy(
+      name = "My Custom App",
+      isCustomized = true
+    )
+    assertEquals("My Custom App", renamedApp.name)
+    assertEquals("Old Name", renamedApp.originalName)
+    assertTrue(renamedApp.isCustomized)
+
+    // Customize brand and color
+    val styledApp = renamedApp.copy(
+      brandType = BrandType.NETFLIX,
+      cardColor = androidx.compose.ui.graphics.Color(0xFFDC2626)
+    )
+    assertEquals(BrandType.NETFLIX, styledApp.brandType)
+    assertEquals(androidx.compose.ui.graphics.Color(0xFFDC2626), styledApp.cardColor)
+
+    // Reset back to original
+    val resetApp = styledApp.copy(
+      name = styledApp.originalName,
+      brandType = BrandType.GENERIC_APP,
+      cardColor = androidx.compose.ui.graphics.Color(0xFF1E2228),
+      isCustomized = false
+    )
+    assertEquals("Old Name", resetApp.name)
+    assertEquals("Old Name", resetApp.originalName)
+    assertEquals(BrandType.GENERIC_APP, resetApp.brandType)
+    assertFalse(resetApp.isCustomized)
+  }
 }
